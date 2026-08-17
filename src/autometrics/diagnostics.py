@@ -19,7 +19,7 @@ def plot_field(cfg, image, matches, comp, check):
     ax.set_title("autometrics: target, comparison, check, and sequence stars")
     ax.set_xlabel("pixel x"); ax.set_ylabel("pixel y")
     output = cfg.derived / "figures" / "field.png"
-    fig.savefig(output, dpi=180, bbox_inches="tight"); plt.close(fig)
+    fig.savefig(output, dpi=720, bbox_inches="tight"); plt.close(fig)
     return output
 
 

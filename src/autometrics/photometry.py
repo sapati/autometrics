@@ -56,13 +56,17 @@ def measure(image, x, y, cfg):
     position = [(x, y)]
     aperture = CircularAperture(position, r=r)
     annulus = CircularAnnulus(position, r_in=rin, r_out=rout)
-    result = aperture_photometry(data, [aperture, annulus])
-    source = float(result["aperture_sum"][0])
-    sky_pixels = float(result["annulus_sum"][0]) / max(annulus.area, 1)
-    flux = source - sky_pixels * aperture.area
-    error = math.sqrt(max(source, 0) * cfg.gain + aperture.area * (cfg.read_noise ** 2)) / cfg.gain
+    source_result = aperture_photometry(data, aperture)
+    sky_result = aperture_photometry(data, annulus)
+    source_sum = float(source_result["aperture_sum"][0])
+    sky_sum = float(sky_result["aperture_sum"][0])
+    sky_per_pixel = sky_sum / max(annulus.area, 1)
+    flux = source_sum - sky_per_pixel * aperture.area
+    source_variance = max(source_sum, 0) * cfg.gain
+    sky_variance = max(sky_sum, 0) * (aperture.area / max(annulus.area, 1))
+    error = math.sqrt(source_variance + sky_variance + aperture.area * (cfg.read_noise ** 2)) / cfg.gain
     snr = flux / error if error > 0 else 0
-    return flux, error, snr, r, rin, rout
+    return flux, error, snr, r, rin, rout, sky_per_pixel
 
 
 def run_photometry(cfg, frames, matches, comp, check):

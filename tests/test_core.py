@@ -10,6 +10,7 @@ from autometrics.photometry import match_catalog, write_table
 from autometrics.reporting import write_report
 from autometrics.calibration import calibrate_lights
 from autometrics.catalog import _coords
+from autometrics.photometry import measure
 
 
 def test_config_creates_reference_layout(tmp_path):
@@ -58,3 +59,18 @@ def test_aavso_sexagesimal_coordinates():
     ra, dec = _coords("22:01:42.86", "69:44:36.5")
     assert 330 < ra < 331
     assert 69 < dec < 70
+
+
+def test_aperture_measurement_returns_flux_and_snr(tmp_path):
+    cfg = load_config(tmp_path)
+    image = cfg.lights / "photometry.fits"
+    data = np.ones((41, 41), dtype=float) * 100
+    yy, xx = np.indices(data.shape)
+    data += 5000 * np.exp(-((xx - 20) ** 2 + (yy - 20) ** 2) / (2 * 2 ** 2))
+    fits.writeto(image, data, overwrite=True)
+    flux, error, snr, radius, inner, outer, sky = measure(image, 20, 20, cfg)
+    assert flux > 0
+    assert error > 0
+    assert snr > 0
+    assert radius < inner < outer
+    assert sky > 0
