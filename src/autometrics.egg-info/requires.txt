@@ -1,0 +1,12 @@
+astropy>=6.0
+astroalign>=2.5
+ccdproc>=2.4
+matplotlib>=3.8
+numpy>=1.26
+photutils>=1.11
+requests>=2.31
+scipy>=1.11
+typer>=0.12
+
+[:python_version < "3.11"]
+tomli>=2.0

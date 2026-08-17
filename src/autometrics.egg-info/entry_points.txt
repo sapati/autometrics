@@ -1,0 +1,2 @@
+[console_scripts]
+autometrics = autometrics.cli:app

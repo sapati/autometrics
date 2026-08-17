@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "autometrics"
+version = "0.1.0"
+description = "Automated CCD photometry pipeline for variable stars"
+requires-python = ">=3.10"
+dependencies = [
+  "astropy>=6.0",
+  "astroalign>=2.5",
+  "ccdproc>=2.4",
+  "matplotlib>=3.8",
+  "numpy>=1.26",
+  "photutils>=1.11",
+  "requests>=2.31",
+  "scipy>=1.11",
+  "tomli>=2.0; python_version < '3.11'",
+  "typer>=0.12",
+]
+
+[project.scripts]
+autometrics = "autometrics.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]

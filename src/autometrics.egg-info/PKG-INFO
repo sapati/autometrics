@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: autometrics
+Version: 0.1.0
+Summary: Automated CCD photometry pipeline for variable stars
+Requires-Python: >=3.10
+Requires-Dist: astropy>=6.0
+Requires-Dist: astroalign>=2.5
+Requires-Dist: ccdproc>=2.4
+Requires-Dist: matplotlib>=3.8
+Requires-Dist: numpy>=1.26
+Requires-Dist: photutils>=1.11
+Requires-Dist: requests>=2.31
+Requires-Dist: scipy>=1.11
+Requires-Dist: tomli>=2.0; python_version < "3.11"
+Requires-Dist: typer>=0.12
