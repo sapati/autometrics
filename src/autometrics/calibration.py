@@ -76,10 +76,11 @@ def calibrate_lights(cfg, dark_map, flat_map):
                 dark = min(dark_map, key=lambda x: abs(x - _exposure(hdr)))
                 if abs(dark - _exposure(hdr)) > cfg.dark_tolerance:
                     raise RuntimeError(f"No dark within tolerance for {path.name}")
-                data -= fits.getdata(dark)
+                data -= fits.getdata(dark_map[dark])
             flat = flat_map.get(_filter(hdr))
             if flat:
-                data /= np.where(fits.getdata(flat) == 0, 1, fits.getdata(flat))
+                flat_data = fits.getdata(flat)
+                data /= np.where(flat_data == 0, 1, flat_data)
             hdr["AUTOCAL"] = (True, "Calibrated by autometrics")
             fits.writeto(output, data, hdr, overwrite=True)
         outputs.append(output)

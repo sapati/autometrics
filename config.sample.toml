@@ -17,6 +17,7 @@ filter = "V"
 solve_field = "solve-field"
 index_path = ""
 radius_arcmin = 30.0
+solve_timeout_seconds = 300.0
 
 [photometry]
 fwhm_pixels = 4.0

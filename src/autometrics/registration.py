@@ -18,8 +18,9 @@ def align_lights(cfg, paths):
             if path == reference:
                 shutil.copy2(path, output)
             else:
-                transform, _ = aa.find_transform(fits.getdata(path), ref_data)
-                data, footprint = aa.apply_transform(transform, fits.getdata(path), ref_data)
+                source_data = np.asarray(fits.getdata(path), dtype=np.float64)
+                transform, _ = aa.find_transform(source_data, ref_data)
+                data, footprint = aa.apply_transform(transform, source_data, ref_data)
                 hdr = fits.getheader(path)
                 for key in ("WCSAXES", "CTYPE1", "CTYPE2", "CRPIX1", "CRPIX2", "CRVAL1", "CRVAL2", "CD1_1", "CD1_2", "CD2_1", "CD2_2"):
                     if key in ref_header:

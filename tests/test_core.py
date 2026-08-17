@@ -8,6 +8,7 @@ from autometrics.config import load_config
 from autometrics.models import SequenceStar
 from autometrics.photometry import match_catalog, write_table
 from autometrics.reporting import write_report
+from autometrics.calibration import calibrate_lights
 
 
 def test_config_creates_reference_layout(tmp_path):
@@ -38,3 +39,15 @@ def test_report_has_required_header(tmp_path):
     assert "#TYPE=Extended" in text
     assert "#OBSCODE=" in text
     assert "Target,2450000.10000" in text
+
+
+def test_calibration_resolves_dark_exposure_key(tmp_path):
+    cfg = load_config(tmp_path)
+    dark_path = cfg.derived / "masterdark" / "dark.fits"
+    light_path = cfg.lights / "light.fits"
+    header = fits.Header({"IMAGETYP": "Light Frame", "EXPTIME": 10.0, "FILTER": "V"})
+    fits.writeto(dark_path, np.ones((4, 4)), header, overwrite=True)
+    fits.writeto(light_path, np.full((4, 4), 5.0), header, overwrite=True)
+    output = calibrate_lights(cfg, {10.0: dark_path}, {})
+    assert len(output) == 1
+    assert np.allclose(fits.getdata(output[0]), 4.0)

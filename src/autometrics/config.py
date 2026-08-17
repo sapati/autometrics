@@ -20,6 +20,7 @@ class Config:
     solve_field: str = "solve-field"
     index_path: str = ""
     radius_arcmin: float = 30.0
+    solve_timeout_seconds: float = 300.0
     detection_sigma: float = 5.0
     fwhm_pixels: float = 4.0
     aperture_fwhm: float = 1.8
@@ -41,6 +42,8 @@ class Config:
     def derived(self): return self.root / "derived"
 
     def ensure_dirs(self):
+        for path in (self.darks, self.flats, self.lights):
+            path.mkdir(parents=True, exist_ok=True)
         for name in ("masterdark", "masterflat", "calibrated", "astrometry", "catalogs", "photometry", "figures", "reports"):
             (self.derived / name).mkdir(parents=True, exist_ok=True)
         (self.derived / "calibrated" / "aligned").mkdir(exist_ok=True)
@@ -68,6 +71,7 @@ def load_config(root: str | Path, filename: str | Path | None = None) -> Config:
             "solve_field": raw.get("astrometry", {}).get("solve_field", "solve-field"),
             "index_path": raw.get("astrometry", {}).get("index_path", ""),
             "radius_arcmin": raw.get("astrometry", {}).get("radius_arcmin", 30.0),
+            "solve_timeout_seconds": raw.get("astrometry", {}).get("solve_timeout_seconds", 300.0),
         }
         values.update({k: raw.get("photometry", {}).get(k, v) for k, v in {
             "detection_sigma": 5.0, "fwhm_pixels": 4.0, "aperture_fwhm": 1.8,
