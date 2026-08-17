@@ -9,6 +9,7 @@ from autometrics.models import SequenceStar
 from autometrics.photometry import match_catalog, write_table
 from autometrics.reporting import write_report
 from autometrics.calibration import calibrate_lights
+from autometrics.catalog import _coords
 
 
 def test_config_creates_reference_layout(tmp_path):
@@ -51,3 +52,9 @@ def test_calibration_resolves_dark_exposure_key(tmp_path):
     output = calibrate_lights(cfg, {10.0: dark_path}, {})
     assert len(output) == 1
     assert np.allclose(fits.getdata(output[0]), 4.0)
+
+
+def test_aavso_sexagesimal_coordinates():
+    ra, dec = _coords("22:01:42.86", "69:44:36.5")
+    assert 330 < ra < 331
+    assert 69 < dec < 70

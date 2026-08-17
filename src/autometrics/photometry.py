@@ -14,9 +14,16 @@ def match_catalog(wcs, stars, detections, radius_arcsec):
     if not len(detections):
         raise RuntimeError("No stars detected")
     world = wcs.pixel_to_world(detections[:, 0], detections[:, 1])
+    # WCS can return a tuple for non-celestial or multi-coordinate WCS objects.
+    if isinstance(world, tuple):
+        if len(world) < 2:
+            raise RuntimeError("Solved WCS did not provide celestial coordinates")
+        world = SkyCoord(world[0], world[1], unit=(u.deg, u.deg), frame="icrs")
+    elif not isinstance(world, SkyCoord):
+        world = SkyCoord(world.ra, world.dec, frame="icrs")
     result = []
     for star in stars:
-        target = SkyCoord(star.ra_deg * u.deg, star.dec_deg * u.deg)
+        target = SkyCoord(ra=star.ra_deg * u.deg, dec=star.dec_deg * u.deg, frame="icrs")
         distances = target.separation(world).arcsec
         index = int(np.argmin(distances))
         if distances[index] <= radius_arcsec:
