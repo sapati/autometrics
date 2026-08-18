@@ -10,6 +10,7 @@ from autometrics.photometry import match_catalog, write_table
 from autometrics.reporting import write_report
 from autometrics.calibration import calibrate_lights
 from autometrics.catalog import _coords
+from autometrics.detection import estimate_fwhm
 from autometrics.photometry import measure
 
 
@@ -74,3 +75,33 @@ def test_aperture_measurement_returns_flux_and_snr(tmp_path):
     assert snr > 0
     assert radius < inner < outer
     assert sky > 0
+
+
+def test_fwhm_estimate_recovers_elliptical_moffat_width(tmp_path):
+    cfg = load_config(tmp_path)
+    cfg.fwhm_pixels = 5.0
+    data = np.full((81, 81), 100.0)
+    yy, xx = np.indices(data.shape)
+    beta, fwhm_x, fwhm_y, theta = 3.2, 6.0, 4.0, 0.4
+    factor = 2 * np.sqrt(2 ** (1 / beta) - 1)
+    dx, dy = xx - 40, yy - 40
+    xrot = np.cos(theta) * dx + np.sin(theta) * dy
+    yrot = -np.sin(theta) * dx + np.cos(theta) * dy
+    data += 5000 * (1 + (xrot / (fwhm_x / factor)) ** 2 + (yrot / (fwhm_y / factor)) ** 2) ** -beta
+    image = cfg.lights / "elliptical-moffat.fits"
+    fits.writeto(image, data, overwrite=True)
+
+    estimate = estimate_fwhm(image, np.array([[40.0, 40.0]]), cfg)
+
+    assert np.isclose(estimate, np.sqrt(fwhm_x * fwhm_y), rtol=0.05)
+
+
+def test_fwhm_estimate_uses_configured_value_when_fit_is_invalid(tmp_path):
+    cfg = load_config(tmp_path)
+    cfg.fwhm_pixels = 4.5
+    image = cfg.lights / "blank.fits"
+    fits.writeto(image, np.full((21, 21), 100.0), overwrite=True)
+
+    estimate = estimate_fwhm(image, np.array([[10.0, 10.0]]), cfg)
+
+    assert estimate == cfg.fwhm_pixels
