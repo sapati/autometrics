@@ -2,6 +2,8 @@
 
 `autometrics` is an aperture-photometry pipeline for CCD variable-star observations. Includes calibration, registration, local astap WCS solving, AAVSO VSP sequence matching, aperture selection, differential photometry, diagnostics, and AAVSO Extended Format export.
 
+The code is mostly AI-generated (GPT-5.6)
+
 ## Setup
 
 ```bash
