@@ -1,6 +1,6 @@
 # autometrics
 
-`autometrics` is an aperture-photometry pipeline for CCD variable-star observations. It follows the `sanyimetrics` project layout and adds calibration, registration, local astrometry.net WCS solving, AAVSO VSP sequence matching, aperture selection, differential photometry, diagnostics, and AAVSO Extended Format export.
+`autometrics` is an aperture-photometry pipeline for CCD variable-star observations. Includes calibration, registration, local astap WCS solving, AAVSO VSP sequence matching, aperture selection, differential photometry, diagnostics, and AAVSO Extended Format export.
 
 ## Setup
 
@@ -11,7 +11,7 @@ python -m pip install -e .
 cp config.sample.toml my-project/config.toml
 ```
 
-Install `astrometry.net` and its index files separately. Configure `astrometry.solve_field` and, if needed, `index_path`.
+Install `astap` and its index files separately. Configure `astrometry.solve_field` and, if needed, `index_path`.
 
 ## Layout
 
@@ -25,7 +25,7 @@ FITS headers should include `IMAGETYP`, `EXPTIME`, `FILTER`, and `DATE-OBS`. Obs
 ## Run
 
 ```bash
-autometrics run my-project "SS Cyg" --config my-project/config.toml
+autometrics my-project "SS Cyg" --config my-project/config.toml
 ```
 
 The run writes an annotated PNG, machine-readable photometry tables, a JSON summary, and an AAVSO Extended Format CSV under `derived/`.
